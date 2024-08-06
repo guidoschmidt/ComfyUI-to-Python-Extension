@@ -11,3 +11,4 @@ Pillow
 scipy
 tqdm
 black
+prompt_toolkit==3.0.47

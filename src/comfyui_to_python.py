@@ -1,5 +1,9 @@
-import copy
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import glob
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import Completer, Completion
+import copy
 import inspect
 import json
 import os
@@ -210,7 +214,8 @@ class CodeGenerator:
             # If the class hasn't been initialized yet, initialize it and generate the import statements
             if class_type not in initialized_objects:
                 # No need to use preview image nodes since we are executing the script in a terminal
-                if class_type == 'PreviewImage':
+                print(class_type)
+                if class_type in ["PreviewImage", "Image Comparer (rgthree)"]:
                     continue
 
                 class_type, import_statement, class_code = self.get_class_info(class_type)
@@ -450,11 +455,24 @@ class ComfyUItoPython:
         print(f"Code successfully generated and written to {self.output_file}")
 
 
+
+class WorkflowFileCompleter(Completer):
+    def get_completions(self, document, complete_event):
+        files = glob.glob("*.json")
+        for f in files:
+            yield Completion(f, start_position=-document.cursor_position)
+
+
 if __name__ == '__main__':
     # Update class parameters here
-    input_file = 'workflow_api.json'
-    output_file = 'workflow_api.py'
+    
+    input_workflow_file = prompt('> ComfyUI worflow file (.json): ',
+                             completer=WorkflowFileCompleter(),
+                             complete_while_typing=True)
+    output_python_file = prompt('> Output to (.py): ')
     queue_size = 10
 
     # Convert ComfyUI workflow to Python
-    ComfyUItoPython(input_file=input_file, output_file=output_file, queue_size=queue_size)
+    ComfyUItoPython(input_file=input_workflow_file,
+                    output_file=output_python_file,
+                    queue_size=queue_size)
