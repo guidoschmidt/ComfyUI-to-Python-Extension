@@ -1,21 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import glob
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.styles import Style
+from typing import Dict, List, Any, Callable, Tuple
+from utils import import_custom_nodes, find_path, add_comfyui_directory_to_sys_path, add_extra_model_paths, get_value_at_index
+import black
 import copy
+import glob
 import inspect
 import json
 import os
 import random
-import sys
 import re
-from typing import Dict, List, Any, Callable, Tuple
-
-import black
-
-
-from utils import import_custom_nodes, find_path, add_comfyui_directory_to_sys_path, add_extra_model_paths, get_value_at_index
+import sys
 
 sys.path.append('../')
 from nodes import NODE_CLASS_MAPPINGS
@@ -465,11 +463,18 @@ class WorkflowFileCompleter(Completer):
 
 if __name__ == '__main__':
     # Update class parameters here
+
+    style = Style.from_dict({
+        # User input (default text).
+        '':          '#ff0066',
+    })
     
-    input_workflow_file = prompt('> ComfyUI worflow file (.json): ',
-                             completer=WorkflowFileCompleter(),
-                             complete_while_typing=True)
-    output_python_file = prompt('> Output to (.py): ')
+    input_workflow_file = prompt('\n\n> ComfyUI worflow file (.json): ',
+                                 completer=WorkflowFileCompleter(),
+                                 complete_while_typing=True,
+                                 style=style)
+    output_python_file = prompt('> Output to (.py): ',
+                                style=style)
     queue_size = 10
 
     # Convert ComfyUI workflow to Python
